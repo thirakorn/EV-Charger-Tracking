@@ -1681,17 +1681,26 @@
                     type: 'text',
                     text: `วิเคราะห์สลิปการชาร์จรถไฟฟ้า${currentImagesBase64.length > 1 ? 'จากรูปทั้งหมด ' + currentImagesBase64.length + ' รูป รวมข้อมูลจากทุกรูปเข้าด้วยกัน' : 'นี้'} และส่งข้อมูลกลับเป็น JSON เท่านั้น ไม่ต้องมี markdown หรือข้อความอื่น
 
-สำคัญเรื่องวันที่:
-- ต้องตอบในรูปแบบ YYYY-MM-DD เท่านั้น (เช่น 2026-03-03) ห้ามใช้รูปแบบอื่น
-- สลิปในไทยอาจแสดงปี พ.ศ. (ปีพุทธศักราช = ปี ค.ศ. + 543)
-- ถ้าเห็นปี 2 หลัก เช่น 69 หมายถึง พ.ศ. 2569 = ค.ศ. 2026
-- ถ้าเห็นปี 4 หลัก เช่น 2569 หมายถึง พ.ศ. 2569 = ค.ศ. 2026
-- ให้แปลงเป็นปี ค.ศ. เสมอ ในผลลัพธ์ date
-- ถ้าวันที่ในสลิปเป็น DD/MM/YY หรือ DD/MM/YYYY ให้แปลงเป็น YYYY-MM-DD
+สำคัญมากเรื่องวันที่ - สลิปอาจแสดงวันที่ในหลายรูปแบบ:
+- DD/MM/YYYY เช่น 3/3/2026 หรือ 03/03/2026 (วัน/เดือน/ปี ค.ศ.)
+- DD/MM/YY เช่น 3/3/26 หรือ 03/03/26 (วัน/เดือน/ปี ค.ศ. 2 หลัก)
+- YYYY/MM/DD เช่น 2026/3/3 หรือ 2026/03/03 (ปี ค.ศ./เดือน/วัน)
+- YY/MM/DD เช่น 26/3/3 (ปี ค.ศ. 2 หลัก/เดือน/วัน) ← สำคัญ! 26 คือปี ไม่ใช่วันที่
+- DD/MM/YYYY พ.ศ. เช่น 3/3/2569 (วัน/เดือน/ปี พ.ศ.)
+- YYYY/MM/DD พ.ศ. เช่น 2569/3/3 (ปี พ.ศ./เดือน/วัน)
+
+กฎตัดสิน:
+- ปี พ.ศ. = ปี ค.ศ. + 543 (เช่น 2569 = 2026)
+- ถ้าเลข 4 หลัก > 2400 แสดงว่าเป็นปี พ.ศ. ให้ลบ 543
+- ถ้าเลข 2 หลัก ให้พิจารณาว่าเป็นปี ค.ศ. + 2000 (เช่น 26 = 2026)
+- วันชาร์จควรอยู่ใกล้เคียงวันปัจจุบัน (ไม่เกิน 1 ปีที่ผ่านมา)
+
+ใน raw_date ให้ใส่วันที่ตามที่เห็นในสลิปทุกประการ ไม่ต้องแปลง
 
 ตอบเป็น JSON format นี้เท่านั้น:
 {
-  "date": "YYYY-MM-DD (ปี ค.ศ. เท่านั้น)",
+  "date": "YYYY-MM-DD (ปี ค.ศ. เท่านั้น เช่น 2026-03-03)",
+  "raw_date": "วันที่ดิบจากสลิปตามที่เห็น เช่น 26/3/3 หรือ 3/3/2569",
   "station": "ชื่อสถานีชาร์จ",
   "kwh": 0.00,
   "cost": 0.00,
@@ -1801,6 +1810,26 @@
       let year, month, day;
       const currentYear = new Date().getFullYear();
 
+      // Helper: resolve a raw year value to CE 4-digit year
+      function resolveYear(y) {
+        if (y < 100) {
+          const ceYear = y + 2000;
+          const beYear = y + 2500 - 543;
+          if (Math.abs(ceYear - currentYear) <= 5) return ceYear;
+          if (Math.abs(beYear - currentYear) <= 5) return beYear;
+          return ceYear;
+        }
+        if (y > 2400) return y - 543;
+        return y;
+      }
+
+      // Helper: check if a date interpretation is valid and reasonable
+      function isValidDate(y, m, d) {
+        if (m < 1 || m > 12 || d < 1 || d > 31) return false;
+        const resolved = resolveYear(y);
+        return Math.abs(resolved - currentYear) <= 2;
+      }
+
       if (parts[0].length === 4) {
         // YYYY-MM-DD or YYYY/MM/DD (4-digit year first)
         year = p0; month = p1; day = p2;
@@ -1808,38 +1837,42 @@
         // DD-MM-YYYY or DD/MM/YYYY (4-digit year last)
         day = p0; month = p1; year = p2;
       } else {
-        // All short (2-digit): determine YY-MM-DD vs DD-MM-YY
-        // Try both interpretations and pick the one with a reasonable year
-        const yearIfFirst = p0 + 2000;
-        const yearIfLast = p2 + 2000;
-        const firstOk = Math.abs(yearIfFirst - currentYear) <= 5;
-        const lastOk = Math.abs(yearIfLast - currentYear) <= 5;
+        // All parts are short: could be YY/M/D or D/M/YY
+        // Try both interpretations
+        const asYMD = { y: p0, m: p1, d: p2 };   // YY-MM-DD
+        const asDMY = { y: p2, m: p1, d: p0 };   // DD-MM-YY
 
-        if (firstOk && !lastOk) {
+        const ymdValid = isValidDate(asYMD.y, asYMD.m, asYMD.d);
+        const dmyValid = isValidDate(asDMY.y, asDMY.m, asDMY.d);
+
+        if (ymdValid && !dmyValid) {
           year = p0; month = p1; day = p2;
-        } else if (!firstOk && lastOk) {
+        } else if (!ymdValid && dmyValid) {
           day = p0; month = p1; year = p2;
+        } else if (ymdValid && dmyValid) {
+          // Both valid - prefer the one where year part > 12 (can't be month/day)
+          if (p0 > 12 && p2 <= 12) {
+            year = p0; month = p1; day = p2;   // p0 is likely year (e.g., 26)
+          } else if (p2 > 12 && p0 <= 12) {
+            day = p0; month = p1; year = p2;   // p2 is likely year (e.g., 26)
+          } else {
+            // Default to YY-MM-DD (AI requested format)
+            year = p0; month = p1; day = p2;
+          }
         } else {
-          // Default to YY-MM-DD (requested format from AI)
-          year = p0; month = p1; day = p2;
+          // Neither valid by strict check, fall back to proximity heuristic
+          const yearIfFirst = resolveYear(p0);
+          const yearIfLast = resolveYear(p2);
+          if (Math.abs(yearIfFirst - currentYear) <= Math.abs(yearIfLast - currentYear)) {
+            year = p0; month = p1; day = p2;
+          } else {
+            day = p0; month = p1; year = p2;
+          }
         }
       }
 
-      // Handle 2-digit years (CE or Buddhist Era shorthand)
-      if (year < 100) {
-        const ceYear = year + 2000;
-        const beYear = year + 2500 - 543;
-        if (Math.abs(ceYear - currentYear) <= 5) {
-          year = ceYear;
-        } else if (Math.abs(beYear - currentYear) <= 5) {
-          year = beYear;
-        } else {
-          year = ceYear;
-        }
-      }
-
-      // Convert 4-digit Buddhist Era (พ.ศ.) to CE (ค.ศ.)
-      if (year > 2400) year -= 543;
+      // Resolve year to CE 4-digit
+      year = resolveYear(year);
 
       // Validate month and day ranges
       if (month < 1 || month > 12 || day < 1 || day > 31) return dateStr;
@@ -1872,7 +1905,21 @@
     }
 
     function fillResult(data) {
-      document.getElementById('resultDate').value = normalizeDate(data.date) || new Date().toISOString().split('T')[0];
+      // Use raw_date from slip as primary source, cross-check with AI's converted date
+      let finalDate = null;
+      const rawNormalized = data.raw_date ? normalizeDate(data.raw_date) : null;
+      const aiNormalized = data.date ? normalizeDate(data.date) : null;
+
+      if (rawNormalized && rawNormalized !== data.raw_date) {
+        // raw_date was successfully parsed by our normalizer
+        finalDate = rawNormalized;
+      } else if (aiNormalized && aiNormalized !== data.date) {
+        finalDate = aiNormalized;
+      } else {
+        finalDate = aiNormalized || rawNormalized;
+      }
+
+      document.getElementById('resultDate').value = finalDate || new Date().toISOString().split('T')[0];
       document.getElementById('resultStation').value = data.station || '';
       document.getElementById('resultKwh').value = data.kwh || 0;
       document.getElementById('resultCost').value = data.cost || 0;
