@@ -2853,7 +2853,7 @@
 
       if (pricePerKwh > 0) {
         const totalCost = neededKwh * pricePerKwh;
-        document.getElementById('calcTotalCost').textContent = formatNumber(totalCost.toFixed(2)) + ' ฿';
+        document.getElementById('calcTotalCost').textContent = formatNumber(totalCost) + ' ฿';
         totalCardEl.style.display = 'block';
 
         // Auto-save to Firestore with debounce
@@ -2904,7 +2904,7 @@
           html += `<div class="calc-history-item">
             <div class="calc-hist-top">
               <span class="calc-hist-date">${date}</span>
-              <span class="calc-hist-cost">${formatNumber(d.totalCost.toFixed(2))} ฿</span>
+              <span class="calc-hist-cost">${formatNumber(d.totalCost)} ฿</span>
             </div>
             <div class="calc-hist-detail">
               แบต ${d.batterySize} kWh | คงเหลือ ${d.batteryPercent}% (${d.remainingKwh.toFixed(2)} kWh) | ชาร์จ ${d.neededKwh.toFixed(2)} kWh | ราคา ${d.pricePerKwh} ฿/kWh
