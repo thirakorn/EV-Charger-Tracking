@@ -1448,7 +1448,7 @@
 
           <div class="result-field">
             <label>ราคาต่อหน่วย (฿/kWh)</label>
-            <input type="number" id="calcPricePerKwh" placeholder="เช่น 7.5" min="0" step="any" oninput="calculateBattery()">
+            <input type="number" id="calcPriceInput" placeholder="เช่น 7.5" min="0" step="any" oninput="calculateBattery()">
           </div>
 
           <div class="calc-total-card" id="calcTotalCard" style="display:none;">
@@ -2834,7 +2834,7 @@
     function calculateBattery() {
       const batterySize = parseFloat(document.getElementById('calcBatterySize').value) || 0;
       const batteryPercent = parseFloat(document.getElementById('calcBatteryPercent').value);
-      const pricePerKwh = parseFloat(document.getElementById('calcPricePerKwh').value) || 0;
+      const pricePerKwh = parseFloat(document.getElementById('calcPriceInput').value) || 0;
       const resultsEl = document.getElementById('calcResults');
       const totalCardEl = document.getElementById('calcTotalCard');
 
