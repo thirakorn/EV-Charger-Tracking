@@ -715,6 +715,74 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
+    /* Calculator */
+    .calc-section {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .calc-section h2 {
+      color: #e2e8f0;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    .calc-section h3 {
+      color: #e2e8f0;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+    .calc-results {
+      margin-top: 12px;
+    }
+    .calc-total-card {
+      background: linear-gradient(135deg, #0f766e, #065f46);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 12px;
+    }
+    .calc-total-label {
+      color: #a7f3d0;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .calc-total-value {
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .calc-history-item {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 8px;
+    }
+    .calc-history-item .calc-hist-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .calc-history-item .calc-hist-date {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+    .calc-history-item .calc-hist-cost {
+      color: #22d3ee;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .calc-history-item .calc-hist-detail {
+      color: #64748b;
+      font-size: 12px;
+    }
+    .calc-history-empty {
+      text-align: center;
+      color: #475569;
+      padding: 20px;
+      font-size: 14px;
+    }
+
     /* Dashboard */
     .dash-section {
       background: #1e293b;
@@ -1205,6 +1273,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         หน้าหลัก
       </button>
+      <button class="tab-btn" onclick="switchTab('calculator')" id="tabCalculator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="12" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="12" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
+        คำนวณ
+      </button>
       <button class="tab-btn" onclick="switchTab('dashboard')" id="tabDashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
@@ -1345,6 +1417,54 @@
     </div>
 
     </div><!-- end tabContentHome -->
+
+    <!-- Calculator Tab -->
+    <div class="tab-content" id="tabContentCalculator">
+
+      <div class="calc-section">
+        <h2><span class="dash-icon">🔋</span> คำนวณค่าชาร์จแบตเตอรี่</h2>
+
+        <div class="result-field">
+          <label>ขนาดแบตเตอรี่ (kWh)</label>
+          <input type="number" id="calcBatterySize" placeholder="เช่น 50" min="0" step="any" oninput="calculateBattery()">
+        </div>
+
+        <div class="result-field">
+          <label>แบตเตอรี่คงเหลือ (%)</label>
+          <input type="number" id="calcBatteryPercent" placeholder="เช่น 20" min="0" max="100" step="any" oninput="calculateBattery()">
+        </div>
+
+        <div class="calc-results" id="calcResults" style="display:none;">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="calcRemainingKwh">0</div>
+              <div class="stat-label">kWh คงเหลือ</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="calcNeededKwh">0</div>
+              <div class="stat-label">kWh ที่ต้องชาร์จ</div>
+            </div>
+          </div>
+
+          <div class="result-field">
+            <label>ราคาต่อหน่วย (฿/kWh)</label>
+            <input type="number" id="calcPricePerKwh" placeholder="เช่น 7.5" min="0" step="any" oninput="calculateBattery()">
+          </div>
+
+          <div class="calc-total-card" id="calcTotalCard" style="display:none;">
+            <div class="calc-total-label">ราคาที่ต้องจ่าย</div>
+            <div class="calc-total-value" id="calcTotalCost">0 ฿</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculator History -->
+      <div class="calc-section" style="margin-top:16px;">
+        <h3><span class="dash-icon">📋</span> ประวัติการคำนวณ</h3>
+        <div id="calcHistory"></div>
+      </div>
+
+    </div><!-- end tabContentCalculator -->
 
     <!-- Dashboard Tab -->
     <div class="tab-content" id="tabContentDashboard">
@@ -2269,6 +2389,10 @@
         document.getElementById('tabDashboard').classList.add('active');
         document.getElementById('tabContentDashboard').classList.add('active');
         buildDashboard(allCharges);
+      } else if (tab === 'calculator') {
+        document.getElementById('tabCalculator').classList.add('active');
+        document.getElementById('tabContentCalculator').classList.add('active');
+        loadCalcHistory();
       } else {
         document.getElementById('tabHome').classList.add('active');
         document.getElementById('tabContentHome').classList.add('active');
@@ -2699,6 +2823,98 @@
           }
         }
       };
+    }
+
+    // ═══════════════════════════════════
+    // ─── Battery Calculator ───
+    // ═══════════════════════════════════
+
+    let calcSaveTimeout = null;
+
+    function calculateBattery() {
+      const batterySize = parseFloat(document.getElementById('calcBatterySize').value) || 0;
+      const batteryPercent = parseFloat(document.getElementById('calcBatteryPercent').value);
+      const pricePerKwh = parseFloat(document.getElementById('calcPricePerKwh').value) || 0;
+      const resultsEl = document.getElementById('calcResults');
+      const totalCardEl = document.getElementById('calcTotalCard');
+
+      if (!batterySize || isNaN(batteryPercent)) {
+        resultsEl.style.display = 'none';
+        return;
+      }
+
+      const percent = Math.max(0, Math.min(100, batteryPercent));
+      const remainingKwh = batterySize * (percent / 100);
+      const neededKwh = batterySize - remainingKwh;
+
+      document.getElementById('calcRemainingKwh').textContent = remainingKwh.toFixed(2);
+      document.getElementById('calcNeededKwh').textContent = neededKwh.toFixed(2);
+      resultsEl.style.display = 'block';
+
+      if (pricePerKwh > 0) {
+        const totalCost = neededKwh * pricePerKwh;
+        document.getElementById('calcTotalCost').textContent = formatNumber(totalCost.toFixed(2)) + ' ฿';
+        totalCardEl.style.display = 'block';
+
+        // Auto-save to Firestore with debounce
+        if (calcSaveTimeout) clearTimeout(calcSaveTimeout);
+        calcSaveTimeout = setTimeout(() => {
+          saveCalcToFirestore(batterySize, percent, remainingKwh, neededKwh, pricePerKwh, totalCost);
+        }, 1500);
+      } else {
+        totalCardEl.style.display = 'none';
+      }
+    }
+
+    async function saveCalcToFirestore(batterySize, percent, remainingKwh, neededKwh, pricePerKwh, totalCost) {
+      if (!db || !currentUser) return;
+      try {
+        await db.collection('users').doc(currentUser.uid).collection('calculations').add({
+          batterySize: batterySize,
+          batteryPercent: percent,
+          remainingKwh: remainingKwh,
+          neededKwh: neededKwh,
+          pricePerKwh: pricePerKwh,
+          totalCost: totalCost,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('บันทึกการคำนวณแล้ว');
+        loadCalcHistory();
+      } catch (err) {
+        console.error('Save calc error:', err);
+      }
+    }
+
+    async function loadCalcHistory() {
+      if (!db || !currentUser) return;
+      const el = document.getElementById('calcHistory');
+      try {
+        const snapshot = await db.collection('users').doc(currentUser.uid)
+          .collection('calculations').orderBy('createdAt', 'desc').limit(20).get();
+
+        if (snapshot.empty) {
+          el.innerHTML = '<div class="calc-history-empty">ยังไม่มีประวัติการคำนวณ</div>';
+          return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          const date = d.createdAt ? d.createdAt.toDate().toLocaleString('th-TH') : '-';
+          html += `<div class="calc-history-item">
+            <div class="calc-hist-top">
+              <span class="calc-hist-date">${date}</span>
+              <span class="calc-hist-cost">${formatNumber(d.totalCost.toFixed(2))} ฿</span>
+            </div>
+            <div class="calc-hist-detail">
+              แบต ${d.batterySize} kWh | คงเหลือ ${d.batteryPercent}% (${d.remainingKwh.toFixed(2)} kWh) | ชาร์จ ${d.neededKwh.toFixed(2)} kWh | ราคา ${d.pricePerKwh} ฿/kWh
+            </div>
+          </div>`;
+        });
+        el.innerHTML = html;
+      } catch (err) {
+        el.innerHTML = '<div class="calc-history-empty">โหลดประวัติไม่สำเร็จ</div>';
+      }
     }
   </script>
 </body>
