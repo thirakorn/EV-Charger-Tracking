@@ -1567,6 +1567,11 @@
             <input type="number" id="calcTimeTargetPercent" placeholder="เช่น 80" min="0" max="100" step="any" oninput="calculateChargingTime()">
           </div>
 
+          <div class="result-field">
+            <label>เวลาเริ่มชาร์จ</label>
+            <input type="time" id="calcTimeStartTime" value="22:05" oninput="calculateChargingTime()">
+          </div>
+
           <div class="calc-results" id="calcTimeResults" style="display:none;">
             <div class="stats-grid">
               <div class="stat-card">
@@ -1582,6 +1587,11 @@
             <div class="calc-time-result-card" id="calcTimeCard">
               <div class="calc-time-result-label">ระยะเวลาชาร์จโดยประมาณ</div>
               <div class="calc-time-result-value" id="calcTimeValue">0 ชม. 0 นาที</div>
+            </div>
+
+            <div class="calc-time-result-card" id="calcTimeEndCard" style="background: linear-gradient(135deg, #0f766e, #065f46);">
+              <div class="calc-time-result-label" style="color: #a7f3d0;">ชาร์จเสร็จเวลา</div>
+              <div class="calc-time-result-value" id="calcTimeEndValue">--:--</div>
             </div>
           </div>
         </div>
@@ -2975,6 +2985,7 @@
       const batterySize = parseFloat(document.getElementById('calcTimeBatterySize').value) || 0;
       const currentPercent = parseFloat(document.getElementById('calcTimeBatteryPercent').value);
       const targetPercent = parseFloat(document.getElementById('calcTimeTargetPercent').value);
+      const startTimeVal = document.getElementById('calcTimeStartTime').value;
       const resultsEl = document.getElementById('calcTimeResults');
 
       if (!batterySize || isNaN(currentPercent) || isNaN(targetPercent)) {
@@ -2997,6 +3008,18 @@
 
       document.getElementById('calcTimeNeededKwh').textContent = neededKwh.toFixed(2);
       document.getElementById('calcTimeValue').textContent = hours + ' ชม. ' + minutes + ' นาที';
+
+      // Calculate end time
+      if (startTimeVal) {
+        const [startH, startM] = startTimeVal.split(':').map(Number);
+        const totalMinutes = startH * 60 + startM + Math.round(chargingHours * 60);
+        const endH = Math.floor(totalMinutes / 60) % 24;
+        const endM = totalMinutes % 60;
+        const nextDay = totalMinutes >= 24 * 60 ? ' (+1 วัน)' : '';
+        document.getElementById('calcTimeEndValue').textContent =
+          String(endH).padStart(2, '0') + ':' + String(endM).padStart(2, '0') + nextDay;
+      }
+
       resultsEl.style.display = 'block';
     }
 
