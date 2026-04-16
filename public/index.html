@@ -715,6 +715,72 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
+    /* Calculator Sub-tabs */
+    .calc-subtab-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .calc-subtab-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1.5px solid #334155;
+      border-radius: 12px;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .calc-subtab-btn.active {
+      background: #0e7490;
+      border-color: #22d3ee;
+      color: #ffffff;
+    }
+    .calc-subtab-content {
+      display: none;
+    }
+    .calc-subtab-content.active {
+      display: block;
+    }
+    .calc-time-result-card {
+      background: linear-gradient(135deg, #1e40af, #7c3aed);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 12px;
+    }
+    .calc-time-result-label {
+      color: #c4b5fd;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .calc-time-result-value {
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .calc-charger-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    .calc-charger-info span.highlight {
+      color: #22d3ee;
+      font-weight: 700;
+    }
+
     /* Calculator */
     .calc-section {
       background: #1e293b;
@@ -1421,47 +1487,114 @@
     <!-- Calculator Tab -->
     <div class="tab-content" id="tabContentCalculator">
 
-      <div class="calc-section">
-        <h2><span class="dash-icon">🔋</span> คำนวณค่าชาร์จแบตเตอรี่</h2>
+      <!-- Sub-tab Navigation -->
+      <div class="calc-subtab-nav">
+        <button class="calc-subtab-btn active" onclick="switchCalcSubtab('cost')" id="calcSubtabCost">
+          💰 คำนวณค่าชาร์จ
+        </button>
+        <button class="calc-subtab-btn" onclick="switchCalcSubtab('time')" id="calcSubtabTime">
+          ⏱️ คำนวณเวลาชาร์จ
+        </button>
+      </div>
 
-        <div class="result-field">
-          <label>ขนาดแบตเตอรี่ (kWh)</label>
-          <input type="number" id="calcBatterySize" placeholder="เช่น 50" min="0" step="any" oninput="calculateBattery()">
-        </div>
+      <!-- Sub-tab 1: Cost Calculator -->
+      <div class="calc-subtab-content active" id="calcSubContentCost">
+        <div class="calc-section">
+          <h2><span class="dash-icon">🔋</span> คำนวณค่าชาร์จแบตเตอรี่</h2>
 
-        <div class="result-field">
-          <label>แบตเตอรี่คงเหลือ (%)</label>
-          <input type="number" id="calcBatteryPercent" placeholder="เช่น 20" min="0" max="100" step="any" oninput="calculateBattery()">
-        </div>
-
-        <div class="calc-results" id="calcResults" style="display:none;">
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-value" id="calcRemainingKwh">0</div>
-              <div class="stat-label">kWh คงเหลือ</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="calcNeededKwh">0</div>
-              <div class="stat-label">kWh ที่ต้องชาร์จ</div>
-            </div>
+          <div class="result-field">
+            <label>ขนาดแบตเตอรี่ (kWh)</label>
+            <input type="number" id="calcBatterySize" placeholder="เช่น 50" min="0" step="any" oninput="calculateBattery()">
           </div>
 
           <div class="result-field">
-            <label>ราคาต่อหน่วย (฿/kWh)</label>
-            <input type="number" id="calcPriceInput" placeholder="เช่น 7.5" min="0" step="any" oninput="calculateBattery()">
+            <label>แบตเตอรี่คงเหลือ (%)</label>
+            <input type="number" id="calcBatteryPercent" placeholder="เช่น 20" min="0" max="100" step="any" oninput="calculateBattery()">
           </div>
 
-          <div class="calc-total-card" id="calcTotalCard" style="display:none;">
-            <div class="calc-total-label">ราคาที่ต้องจ่าย</div>
-            <div class="calc-total-value" id="calcTotalCost">0 ฿</div>
+          <div class="calc-results" id="calcResults" style="display:none;">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value" id="calcRemainingKwh">0</div>
+                <div class="stat-label">kWh คงเหลือ</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="calcNeededKwh">0</div>
+                <div class="stat-label">kWh ที่ต้องชาร์จ</div>
+              </div>
+            </div>
+
+            <div class="result-field">
+              <label>ราคาต่อหน่วย (฿/kWh)</label>
+              <input type="number" id="calcPriceInput" placeholder="เช่น 7.5" min="0" step="any" oninput="calculateBattery()">
+            </div>
+
+            <div class="calc-total-card" id="calcTotalCard" style="display:none;">
+              <div class="calc-total-label">ราคาที่ต้องจ่าย</div>
+              <div class="calc-total-value" id="calcTotalCost">0 ฿</div>
+            </div>
           </div>
+        </div>
+
+        <!-- Calculator History -->
+        <div class="calc-section" style="margin-top:16px;">
+          <h3><span class="dash-icon">📋</span> ประวัติการคำนวณ</h3>
+          <div id="calcHistory"></div>
         </div>
       </div>
 
-      <!-- Calculator History -->
-      <div class="calc-section" style="margin-top:16px;">
-        <h3><span class="dash-icon">📋</span> ประวัติการคำนวณ</h3>
-        <div id="calcHistory"></div>
+      <!-- Sub-tab 2: Charging Time Calculator -->
+      <div class="calc-subtab-content" id="calcSubContentTime">
+        <div class="calc-section">
+          <h2><span class="dash-icon">⏱️</span> คำนวณระยะเวลาชาร์จ</h2>
+
+          <div class="calc-charger-info">
+            ⚡ เครื่องชาร์จ: <span class="highlight">7 kW (AC)</span>
+          </div>
+
+          <div class="result-field">
+            <label>ขนาดแบตเตอรี่ (kWh)</label>
+            <input type="number" id="calcTimeBatterySize" placeholder="เช่น 50" min="0" step="any" oninput="calculateChargingTime()">
+          </div>
+
+          <div class="result-field">
+            <label>แบตเตอรี่คงเหลือ (%)</label>
+            <input type="number" id="calcTimeBatteryPercent" placeholder="เช่น 20" min="0" max="100" step="any" oninput="calculateChargingTime()">
+          </div>
+
+          <div class="result-field">
+            <label>ชาร์จถึง (%)</label>
+            <input type="number" id="calcTimeTargetPercent" placeholder="เช่น 80" min="0" max="100" step="any" oninput="calculateChargingTime()">
+          </div>
+
+          <div class="result-field">
+            <label>เวลาเริ่มชาร์จ</label>
+            <input type="time" id="calcTimeStartTime" value="22:05" oninput="calculateChargingTime()">
+          </div>
+
+          <div class="calc-results" id="calcTimeResults" style="display:none;">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value" id="calcTimeNeededKwh">0</div>
+                <div class="stat-label">kWh ที่ต้องชาร์จ</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="calcTimeChargerPower">7</div>
+                <div class="stat-label">kW เครื่องชาร์จ</div>
+              </div>
+            </div>
+
+            <div class="calc-time-result-card" id="calcTimeCard">
+              <div class="calc-time-result-label">ระยะเวลาชาร์จโดยประมาณ</div>
+              <div class="calc-time-result-value" id="calcTimeValue">0 ชม. 0 นาที</div>
+            </div>
+
+            <div class="calc-time-result-card" id="calcTimeEndCard" style="background: linear-gradient(135deg, #0f766e, #065f46);">
+              <div class="calc-time-result-label" style="color: #a7f3d0;">ชาร์จเสร็จเวลา</div>
+              <div class="calc-time-result-value" id="calcTimeEndValue">--:--</div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div><!-- end tabContentCalculator -->
@@ -2823,6 +2956,71 @@
           }
         }
       };
+    }
+
+    // ═══════════════════════════════════
+    // ─── Calculator Sub-tab Navigation ───
+    // ═══════════════════════════════════
+
+    function switchCalcSubtab(subtab) {
+      document.querySelectorAll('.calc-subtab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.calc-subtab-content').forEach(c => c.classList.remove('active'));
+
+      if (subtab === 'time') {
+        document.getElementById('calcSubtabTime').classList.add('active');
+        document.getElementById('calcSubContentTime').classList.add('active');
+      } else {
+        document.getElementById('calcSubtabCost').classList.add('active');
+        document.getElementById('calcSubContentCost').classList.add('active');
+      }
+    }
+
+    // ═══════════════════════════════════
+    // ─── Charging Time Calculator ───
+    // ═══════════════════════════════════
+
+    const CHARGER_POWER_KW = 7;
+
+    function calculateChargingTime() {
+      const batterySize = parseFloat(document.getElementById('calcTimeBatterySize').value) || 0;
+      const currentPercent = parseFloat(document.getElementById('calcTimeBatteryPercent').value);
+      const targetPercent = parseFloat(document.getElementById('calcTimeTargetPercent').value);
+      const startTimeVal = document.getElementById('calcTimeStartTime').value;
+      const resultsEl = document.getElementById('calcTimeResults');
+
+      if (!batterySize || isNaN(currentPercent) || isNaN(targetPercent)) {
+        resultsEl.style.display = 'none';
+        return;
+      }
+
+      const current = Math.max(0, Math.min(100, currentPercent));
+      const target = Math.max(0, Math.min(100, targetPercent));
+
+      if (target <= current) {
+        resultsEl.style.display = 'none';
+        return;
+      }
+
+      const neededKwh = batterySize * (target - current) / 100;
+      const chargingHours = neededKwh / CHARGER_POWER_KW;
+      const hours = Math.floor(chargingHours);
+      const minutes = Math.round((chargingHours - hours) * 60);
+
+      document.getElementById('calcTimeNeededKwh').textContent = neededKwh.toFixed(2);
+      document.getElementById('calcTimeValue').textContent = hours + ' ชม. ' + minutes + ' นาที';
+
+      // Calculate end time
+      if (startTimeVal) {
+        const [startH, startM] = startTimeVal.split(':').map(Number);
+        const totalMinutes = startH * 60 + startM + Math.round(chargingHours * 60);
+        const endH = Math.floor(totalMinutes / 60) % 24;
+        const endM = totalMinutes % 60;
+        const nextDay = totalMinutes >= 24 * 60 ? ' (+1 วัน)' : '';
+        document.getElementById('calcTimeEndValue').textContent =
+          String(endH).padStart(2, '0') + ':' + String(endM).padStart(2, '0') + nextDay;
+      }
+
+      resultsEl.style.display = 'block';
     }
 
     // ═══════════════════════════════════
