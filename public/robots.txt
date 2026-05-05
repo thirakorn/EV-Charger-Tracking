@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ev-tracker-989cf.web.app/sitemap.xml
