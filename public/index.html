@@ -1130,6 +1130,171 @@
       margin-top: 4px;
     }
 
+    /* ─── Savings (discount) card ─── */
+    .savings-card {
+      background: linear-gradient(135deg, #064e3b, #065f46);
+      border: 1px solid #10b981;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .savings-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .savings-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .savings-label {
+      font-size: 0.7rem;
+      color: #a7f3d0;
+    }
+
+    .savings-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ecfdf5;
+      line-height: 1.2;
+    }
+
+    .savings-sub {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(16, 185, 129, 0.35);
+      text-align: center;
+    }
+
+    .savings-sub span {
+      display: block;
+      font-size: 0.65rem;
+      color: #6ee7b7;
+    }
+
+    .savings-sub b {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ecfdf5;
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── Period delta badges ─── */
+    .delta {
+      font-size: 0.62rem;
+      margin-top: 3px;
+      min-height: 0.9rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .delta.good { color: #34d399; }
+    .delta.bad { color: #f87171; }
+    .delta.neutral { color: #64748b; }
+
+    /* ─── Month-end projection ─── */
+    .spending-projection {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #1e293b;
+      text-align: center;
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+
+    .spending-projection b {
+      color: #f59e0b;
+      font-size: 0.95rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .spending-projection:empty {
+      display: none;
+    }
+
+    /* ─── Station table extras ─── */
+    .station-expense-table tbody td:first-child {
+      max-width: none;
+      overflow: visible;
+      white-space: normal;
+    }
+
+    .station-expense-table .station-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .station-expense-table .station-sub {
+      font-size: 0.62rem;
+      color: #34d399;
+      margin-top: 2px;
+    }
+
+    .station-expense-table td.rate-cheap {
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    .station-expense-table td.rate-pricey {
+      color: #f87171;
+      font-weight: 700;
+    }
+
+    /* ─── Personal records ─── */
+    .records-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .record-card {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      min-width: 0; /* let the 1fr track shrink; meta text is ellipsised instead */
+    }
+
+    .records-grid .station-expense-empty {
+      grid-column: 1 / -1;
+    }
+
+    .record-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .record-label {
+      font-size: 0.65rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .record-value {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #22d3ee;
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .record-meta {
+      font-size: 0.62rem;
+      color: #475569;
+      margin-top: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .dash-empty {
       text-align: center;
       padding: 40px 20px;
@@ -1682,14 +1847,17 @@
               <div class="spending-stat">
                 <div class="value cost" id="weekCost">0</div>
                 <div class="unit">บาท</div>
+                <div class="delta" id="weekCostDelta"></div>
               </div>
               <div class="spending-stat">
                 <div class="value" id="weekKwh">0</div>
                 <div class="unit">kWh</div>
+                <div class="delta" id="weekKwhDelta"></div>
               </div>
               <div class="spending-stat">
                 <div class="value" id="weekCount">0</div>
                 <div class="unit">ครั้ง</div>
+                <div class="delta" id="weekCountDelta"></div>
               </div>
             </div>
           </div>
@@ -1712,15 +1880,35 @@
               <div class="spending-stat">
                 <div class="value cost" id="monthCost">0</div>
                 <div class="unit">บาท</div>
+                <div class="delta" id="monthCostDelta"></div>
               </div>
               <div class="spending-stat">
                 <div class="value" id="monthKwh">0</div>
                 <div class="unit">kWh</div>
+                <div class="delta" id="monthKwhDelta"></div>
               </div>
               <div class="spending-stat">
                 <div class="value" id="monthCount">0</div>
                 <div class="unit">ครั้ง</div>
+                <div class="delta" id="monthCountDelta"></div>
               </div>
+            </div>
+            <div class="spending-projection" id="monthProjection"></div>
+          </div>
+
+          <!-- Accumulated discount / savings -->
+          <div class="savings-card" id="savingsCard">
+            <div class="savings-top">
+              <div class="savings-icon">🎁</div>
+              <div>
+                <div class="savings-label">ส่วนลดสะสมทั้งหมด</div>
+                <div class="savings-value" id="savingsTotal">0 ฿</div>
+              </div>
+            </div>
+            <div class="savings-sub">
+              <div><span id="savingsMonthLabel">เดือนนี้</span><b id="savingsMonth">0 ฿</b></div>
+              <div><span>เฉลี่ยลด</span><b id="savingsPct">0%</b></div>
+              <div><span>ราคาเต็มรวม</span><b id="savingsGross">0 ฿</b></div>
             </div>
           </div>
 
@@ -1750,6 +1938,12 @@
           <div class="chart-container"><canvas id="chartCostPerKwh"></canvas></div>
         </div>
 
+        <!-- 2b. Monthly Discount -->
+        <div class="dash-section" id="sectionDiscount">
+          <h3><span class="dash-icon">🎁</span> ส่วนลดรายเดือน</h3>
+          <div class="chart-container"><canvas id="chartDiscount"></canvas></div>
+        </div>
+
         <!-- 3. Day of Week Heatmap -->
         <div class="dash-section">
           <h3><span class="dash-icon">🗓️</span> วันที่ชาร์จบ่อย</h3>
@@ -1773,8 +1967,18 @@
 
         <!-- 6. Avg Duration by Station -->
         <div class="dash-section">
-          <h3><span class="dash-icon">⏱️</span> ระยะเวลาชาร์จเฉลี่ย (นาที)</h3>
+          <h3><span class="dash-icon">⏱️</span> ระยะเวลา &amp; กำลังชาร์จตามสถานี</h3>
+          <div class="chart-toggle" id="durationToggle">
+            <button class="active" onclick="setDurationMode('duration')">ระยะเวลาเฉลี่ย (นาที)</button>
+            <button onclick="setDurationMode('power')">กำลังเฉลี่ย (kW)</button>
+          </div>
           <div class="chart-container tall"><canvas id="chartDuration"></canvas></div>
+        </div>
+
+        <!-- 7. Personal Records -->
+        <div class="dash-section">
+          <h3><span class="dash-icon">🏆</span> สถิติส่วนตัว</h3>
+          <div class="records-grid" id="recordsGrid"></div>
         </div>
 
       </div>
@@ -2605,7 +2809,17 @@
       buildDayOfWeekChart(charges);
       buildStationCharts(charges);
       buildDurationChart(charges);
+      buildDiscountChart(charges);
+      buildRecords(charges);
     }
+
+    // ─── Shared value helpers ───
+    // cost is stored NET (already discounted); gross = net + discount
+    function discountOf(c) { return c.discount || 0; }
+    function grossOf(c) { return (c.cost || 0) + discountOf(c); }
+    function pricePerKwhOf(c) { return c.kwh > 0 ? (c.cost || 0) / c.kwh : null; }
+    function avgKwOf(c) { return (c.duration > 0 && c.kwh > 0) ? c.kwh / (c.duration / 60) : null; }
+    function fmt2(v) { return v.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
     // ─── Helper: group by month ───
     function groupByMonth(charges) {
@@ -2778,46 +2992,123 @@
     function calcSpending(charges, start, end) {
       const startStr = toLocalDateStr(start);
       const endStr = toLocalDateStr(end);
-      let totalCost = 0, totalKwh = 0, count = 0;
+      let totalCost = 0, totalKwh = 0, count = 0, totalDiscount = 0, totalGross = 0;
       charges.forEach(c => {
         if (!c.date) return;
         if (c.date >= startStr && c.date <= endStr) {
           totalCost += (c.cost || 0);
           totalKwh += (c.kwh || 0);
+          totalDiscount += discountOf(c);
+          totalGross += grossOf(c);
           count++;
         }
       });
-      return { totalCost, totalKwh, count };
+      return { totalCost, totalKwh, count, totalDiscount, totalGross };
+    }
+
+    // Render a ▲/▼ % badge comparing the current period with the previous one.
+    // tone 'cost' = an increase is bad (red); 'neutral' = informational only.
+    function renderDelta(id, cur, prev, tone) {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      if (!prev) {
+        el.textContent = cur > 0 ? '—' : '';
+        el.className = 'delta neutral';
+        return;
+      }
+
+      const pct = ((cur - prev) / prev) * 100;
+      if (Math.abs(pct) < 0.5) {
+        el.textContent = '≈ เท่าเดิม';
+        el.className = 'delta neutral';
+        return;
+      }
+
+      const up = pct > 0;
+      let cls = 'neutral';
+      if (tone === 'cost') cls = up ? 'bad' : 'good';
+      el.textContent = `${up ? '▲' : '▼'} ${Math.abs(pct).toFixed(0)}%`;
+      el.className = 'delta ' + cls;
     }
 
     function buildSpendingSummary(charges) {
       // Weekly
       const weekRange = getWeekRange(weekOffset);
       const weekData = calcSpending(charges, weekRange.start, weekRange.end);
+      const prevWeekRange = getWeekRange(weekOffset - 1);
+      const prevWeekData = calcSpending(charges, prevWeekRange.start, prevWeekRange.end);
       const weekLabel = weekOffset === 0 ? 'สัปดาห์นี้' : weekOffset === -1 ? 'สัปดาห์ที่แล้ว' : `${Math.abs(weekOffset)} สัปดาห์ก่อน`;
       const weekDateRange = `${formatDateShort(weekRange.start)} - ${formatDateShort(weekRange.end)}`;
 
       document.getElementById('weekLabel').textContent = weekLabel;
       document.getElementById('weekDateRange').textContent = weekDateRange;
-      document.getElementById('weekCost').textContent = weekData.totalCost.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById('weekKwh').textContent = weekData.totalKwh.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('weekCost').textContent = fmt2(weekData.totalCost);
+      document.getElementById('weekKwh').textContent = fmt2(weekData.totalKwh);
       document.getElementById('weekCount').textContent = weekData.count;
       document.getElementById('weekNextBtn').disabled = weekOffset >= 0;
+
+      renderDelta('weekCostDelta', weekData.totalCost, prevWeekData.totalCost, 'cost');
+      renderDelta('weekKwhDelta', weekData.totalKwh, prevWeekData.totalKwh, 'neutral');
+      renderDelta('weekCountDelta', weekData.count, prevWeekData.count, 'neutral');
 
       // Monthly
       const monthRange = getMonthRange(monthOffset);
       const monthData = calcSpending(charges, monthRange.start, monthRange.end);
+      const prevMonthRange = getMonthRange(monthOffset - 1);
+      const prevMonthData = calcSpending(charges, prevMonthRange.start, prevMonthRange.end);
       const monthLabel = monthOffset === 0 ? 'เดือนนี้' : monthOffset === -1 ? 'เดือนที่แล้ว' : `${Math.abs(monthOffset)} เดือนก่อน`;
 
       document.getElementById('monthLabel').textContent = monthLabel;
       document.getElementById('monthDateRange').textContent = formatMonthYear(monthRange.start);
-      document.getElementById('monthCost').textContent = monthData.totalCost.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById('monthKwh').textContent = monthData.totalKwh.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('monthCost').textContent = fmt2(monthData.totalCost);
+      document.getElementById('monthKwh').textContent = fmt2(monthData.totalKwh);
       document.getElementById('monthCount').textContent = monthData.count;
       document.getElementById('monthNextBtn').disabled = monthOffset >= 0;
 
+      renderDelta('monthCostDelta', monthData.totalCost, prevMonthData.totalCost, 'cost');
+      renderDelta('monthKwhDelta', monthData.totalKwh, prevMonthData.totalKwh, 'neutral');
+      renderDelta('monthCountDelta', monthData.count, prevMonthData.count, 'neutral');
+
+      buildMonthProjection(monthRange, monthData);
+      buildSavingsCard(charges, monthData, monthLabel);
+
       // Station expense table for selected month
       buildStationExpenseTable(charges, monthRange.start, monthRange.end);
+    }
+
+    // ─── Month-end spending projection (current month only) ───
+    function buildMonthProjection(monthRange, monthData) {
+      const el = document.getElementById('monthProjection');
+      if (monthOffset !== 0 || monthData.count === 0) {
+        el.innerHTML = '';
+        return;
+      }
+
+      const now = new Date();
+      const daysInMonth = monthRange.end.getDate();
+      const daysElapsed = Math.min(now.getDate(), daysInMonth);
+      const projected = (monthData.totalCost / daysElapsed) * daysInMonth;
+
+      if (daysElapsed >= daysInMonth) {
+        el.innerHTML = `ครบเดือนแล้ว — ใช้ไปทั้งหมด <b>${fmt2(monthData.totalCost)} ฿</b>`;
+        return;
+      }
+
+      el.innerHTML = `ผ่านมา ${daysElapsed}/${daysInMonth} วัน · คาดว่าทั้งเดือน ~<b>${fmt2(projected)} ฿</b>`;
+    }
+
+    // ─── Accumulated discount / savings ───
+    function buildSavingsCard(charges, monthData, monthLabelText) {
+      const totalDiscount = charges.reduce((sum, c) => sum + discountOf(c), 0);
+      const totalGross = charges.reduce((sum, c) => sum + grossOf(c), 0);
+      const pct = totalGross > 0 ? (totalDiscount / totalGross) * 100 : 0;
+
+      document.getElementById('savingsTotal').textContent = fmt2(totalDiscount) + ' ฿';
+      document.getElementById('savingsMonthLabel').textContent = 'ส่วนลด' + monthLabelText;
+      document.getElementById('savingsMonth').textContent = fmt2(monthData.totalDiscount) + ' ฿';
+      document.getElementById('savingsPct').textContent = pct.toFixed(1) + '%';
+      document.getElementById('savingsGross').textContent = fmt2(totalGross) + ' ฿';
     }
 
     function buildStationExpenseTable(charges, start, end) {
@@ -2828,9 +3119,10 @@
       charges.forEach(c => {
         if (!c.date || c.date < startStr || c.date > endStr) return;
         const s = c.station || 'ไม่ระบุ';
-        if (!stationMap[s]) stationMap[s] = { cost: 0, kwh: 0, count: 0 };
+        if (!stationMap[s]) stationMap[s] = { cost: 0, kwh: 0, count: 0, discount: 0 };
         stationMap[s].cost += (c.cost || 0);
         stationMap[s].kwh += (c.kwh || 0);
+        stationMap[s].discount += discountOf(c);
         stationMap[s].count++;
       });
 
@@ -2842,20 +3134,38 @@
         return;
       }
 
-      const fmt = v => v.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const fmt = fmt2;
       const totalCost = entries.reduce((sum, e) => sum + e[1].cost, 0);
       const totalKwh = entries.reduce((sum, e) => sum + e[1].kwh, 0);
       const totalCount = entries.reduce((sum, e) => sum + e[1].count, 0);
+      const totalDiscount = entries.reduce((sum, e) => sum + e[1].discount, 0);
+
+      // Rank by ฿/kWh so the cheapest / priciest station stands out
+      const rates = entries.filter(([, d]) => d.kwh > 0).map(([, d]) => d.cost / d.kwh);
+      const minRate = rates.length > 1 ? Math.min(...rates) : null;
+      const maxRate = rates.length > 1 ? Math.max(...rates) : null;
 
       let html = `<table class="station-expense-table">
-        <colgroup><col style="width:40%"><col style="width:15%"><col style="width:20%"><col style="width:25%"></colgroup>
-        <thead><tr><th>สถานี</th><th>ครั้ง</th><th>kWh</th><th>บาท</th></tr></thead><tbody>`;
+        <colgroup><col style="width:34%"><col style="width:11%"><col style="width:17%"><col style="width:19%"><col style="width:19%"></colgroup>
+        <thead><tr><th>สถานี</th><th>ครั้ง</th><th>kWh</th><th>฿/kWh</th><th>บาท</th></tr></thead><tbody>`;
 
       entries.forEach(([name, d]) => {
-        html += `<tr><td title="${escapeHtml(name)}">${escapeHtml(name)}</td><td>${d.count}</td><td>${fmt(d.kwh)}</td><td>${fmt(d.cost)}</td></tr>`;
+        const rate = d.kwh > 0 ? d.cost / d.kwh : null;
+        let rateCls = '';
+        if (rate !== null && minRate !== null && minRate !== maxRate) {
+          if (rate === minRate) rateCls = ' class="rate-cheap"';
+          else if (rate === maxRate) rateCls = ' class="rate-pricey"';
+        }
+        const sub = d.discount > 0 ? `<div class="station-sub">ลด ${fmt(d.discount)} ฿</div>` : '';
+        html += `<tr><td><div class="station-name" title="${escapeHtml(name)}">${escapeHtml(name)}</div>${sub}</td>` +
+          `<td>${d.count}</td><td>${fmt(d.kwh)}</td>` +
+          `<td${rateCls}>${rate !== null ? fmt(rate) : '-'}</td><td>${fmt(d.cost)}</td></tr>`;
       });
 
-      html += `</tbody><tfoot><tr><td>รวม</td><td>${totalCount}</td><td>${fmt(totalKwh)}</td><td>${fmt(totalCost)}</td></tr></tfoot></table>`;
+      const totalRate = totalKwh > 0 ? fmt(totalCost / totalKwh) : '-';
+      const footSub = totalDiscount > 0 ? `<div class="station-sub">ลดรวม ${fmt(totalDiscount)} ฿</div>` : '';
+      html += `</tbody><tfoot><tr><td>รวม${footSub}</td><td>${totalCount}</td><td>${fmt(totalKwh)}</td>` +
+        `<td>${totalRate}</td><td>${fmt(totalCost)}</td></tr></tfoot></table>`;
       body.innerHTML = html;
     }
 
@@ -2926,18 +3236,39 @@
     }
 
     // ─── 6. Duration by Station (horizontal bar) ───
+    let currentDurationMode = 'duration';
+
+    function setDurationMode(mode) {
+      currentDurationMode = mode;
+      document.querySelectorAll('#durationToggle button').forEach((b, i) => {
+        b.classList.toggle('active', (i === 0) === (mode === 'duration'));
+      });
+      buildDurationChart(allCharges);
+    }
+
     function buildDurationChart(charges) {
       const durationMap = {};
       const countMap = {};
+      const kwhMap = {};
       charges.forEach(c => {
         if (!c.duration) return;
         const s = c.station || 'ไม่ระบุ';
         durationMap[s] = (durationMap[s] || 0) + c.duration;
         countMap[s] = (countMap[s] || 0) + 1;
+        kwhMap[s] = (kwhMap[s] || 0) + (c.kwh || 0);
       });
 
+      const isPower = currentDurationMode === 'power';
+
+      // Average power (kW) = total kWh / total charging hours at that station
       const entries = Object.keys(durationMap)
-        .map(s => ({ station: s, avg: Math.round(durationMap[s] / countMap[s]) }))
+        .map(s => ({
+          station: s,
+          avg: isPower
+            ? Math.round((kwhMap[s] / (durationMap[s] / 60)) * 10) / 10
+            : Math.round(durationMap[s] / countMap[s])
+        }))
+        .filter(e => isFinite(e.avg) && e.avg > 0)
         .sort((a, b) => b.avg - a.avg)
         .slice(0, 8);
 
@@ -2952,10 +3283,10 @@
         data: {
           labels: entries.map(e => e.station),
           datasets: [{
-            label: 'นาที',
+            label: isPower ? 'kW' : 'นาที',
             data: entries.map(e => e.avg),
-            backgroundColor: '#a78bfa99',
-            borderColor: '#a78bfa',
+            backgroundColor: isPower ? '#22d3ee99' : '#a78bfa99',
+            borderColor: isPower ? '#22d3ee' : '#a78bfa',
             borderWidth: 2,
             borderRadius: 6,
           }]
@@ -2964,7 +3295,14 @@
           indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ctx.parsed.x + (isPower ? ' kW' : ' นาที')
+              }
+            }
+          },
           scales: {
             x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
             y: {
@@ -2981,6 +3319,154 @@
           }
         }
       });
+    }
+
+    // ─── 6b. Monthly Discount Chart ───
+    function buildDiscountChart(charges) {
+      const section = document.getElementById('sectionDiscount');
+      const { keys, map } = groupByMonth(charges);
+      const months = keys.slice(-12);
+
+      const discounts = months.map(k => map[k].reduce((sum, c) => sum + discountOf(c), 0));
+      const pcts = months.map(k => {
+        const gross = map[k].reduce((sum, c) => sum + grossOf(c), 0);
+        const disc = map[k].reduce((sum, c) => sum + discountOf(c), 0);
+        return gross > 0 ? Math.round((disc / gross) * 1000) / 10 : 0;
+      });
+
+      // Nothing to show if this user never recorded a discount
+      if (discounts.every(v => v === 0)) {
+        destroyChart('chartDiscount');
+        section.style.display = 'none';
+        return;
+      }
+      section.style.display = 'block';
+
+      destroyChart('chartDiscount');
+      chartInstances['chartDiscount'] = new Chart(document.getElementById('chartDiscount'), {
+        data: {
+          labels: months.map(monthLabel),
+          datasets: [
+            {
+              type: 'bar',
+              label: 'ส่วนลด (฿)',
+              data: discounts,
+              backgroundColor: '#10b98199',
+              borderColor: '#10b981',
+              borderWidth: 2,
+              borderRadius: 6,
+              yAxisID: 'y',
+            },
+            {
+              type: 'line',
+              label: '% ส่วนลด',
+              data: pcts,
+              borderColor: '#f59e0b',
+              backgroundColor: '#f59e0b',
+              borderWidth: 2,
+              tension: 0.3,
+              pointRadius: 3,
+              yAxisID: 'y1',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12, usePointStyle: true }
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => ctx.datasetIndex === 0
+                  ? 'ส่วนลด ' + fmt2(ctx.parsed.y) + ' ฿'
+                  : 'ลด ' + ctx.parsed.y + '%'
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#1e293b' } },
+            y: {
+              position: 'left',
+              beginAtZero: true,
+              ticks: { color: '#64748b' },
+              grid: { color: '#1e293b' },
+              title: { display: true, text: 'บาท', color: '#475569', font: { size: 10 } }
+            },
+            y1: {
+              position: 'right',
+              beginAtZero: true,
+              ticks: { color: '#64748b', callback: v => v + '%' },
+              grid: { display: false },
+              title: { display: true, text: '% ของราคาเต็ม', color: '#475569', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    // ─── 7. Personal Records ───
+    function buildRecords(charges) {
+      const grid = document.getElementById('recordsGrid');
+      const priced = charges.filter(c => c.kwh > 0 && (c.cost || 0) > 0);
+
+      const cards = [];
+      const card = (icon, label, value, meta) =>
+        `<div class="record-card">
+          <div class="record-icon">${icon}</div>
+          <div class="record-label">${label}</div>
+          <div class="record-value">${value}</div>
+          <div class="record-meta" title="${escapeHtml(meta)}">${escapeHtml(meta)}</div>
+        </div>`;
+
+      if (priced.length > 0) {
+        const byRate = [...priced].sort((a, b) => pricePerKwhOf(a) - pricePerKwhOf(b));
+        const cheap = byRate[0];
+        const pricey = byRate[byRate.length - 1];
+        cards.push(card('🥇', 'ถูกที่สุด', fmt2(pricePerKwhOf(cheap)) + ' ฿/kWh',
+          `${cheap.station || 'ไม่ระบุ'} · ${formatDate(cheap.date)}`));
+        cards.push(card('💸', 'แพงที่สุด', fmt2(pricePerKwhOf(pricey)) + ' ฿/kWh',
+          `${pricey.station || 'ไม่ระบุ'} · ${formatDate(pricey.date)}`));
+      }
+
+      const withKwh = charges.filter(c => (c.kwh || 0) > 0);
+      if (withKwh.length > 0) {
+        const big = withKwh.reduce((a, b) => (b.kwh > a.kwh ? b : a));
+        cards.push(card('🔋', 'ชาร์จมากสุด', fmt2(big.kwh) + ' kWh',
+          `${big.station || 'ไม่ระบุ'} · ${formatDate(big.date)}`));
+      }
+
+      const withCost = charges.filter(c => (c.cost || 0) > 0);
+      if (withCost.length > 0) {
+        const exp = withCost.reduce((a, b) => (b.cost > a.cost ? b : a));
+        cards.push(card('🧾', 'จ่ายมากสุด/ครั้ง', fmt2(exp.cost) + ' ฿',
+          `${exp.station || 'ไม่ระบุ'} · ${formatDate(exp.date)}`));
+      }
+
+      // Average gap between charging days
+      const days = [...new Set(charges.map(c => c.date).filter(Boolean))].sort();
+      if (days.length > 1) {
+        const first = new Date(days[0] + 'T00:00:00');
+        const last = new Date(days[days.length - 1] + 'T00:00:00');
+        const spanDays = (last - first) / 86400000;
+        const gap = spanDays / (days.length - 1);
+        cards.push(card('📆', 'ชาร์จทุกๆ', gap.toFixed(1) + ' วัน',
+          `${days.length} วันที่ชาร์จ ใน ${Math.round(spanDays)} วัน`));
+      }
+
+      // Average charges per month
+      const { keys } = groupByMonth(charges);
+      if (keys.length > 0) {
+        const perMonth = charges.filter(c => c.date).length / keys.length;
+        cards.push(card('📊', 'เฉลี่ยต่อเดือน', perMonth.toFixed(1) + ' ครั้ง',
+          `เก็บข้อมูล ${keys.length} เดือน`));
+      }
+
+      grid.innerHTML = cards.length
+        ? cards.join('')
+        : '<div class="station-expense-empty">ยังไม่มีข้อมูลพอสำหรับสถิติ</div>';
     }
 
     // ─── Chart Helpers ───
